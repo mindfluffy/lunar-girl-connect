@@ -76,3 +76,17 @@ html {
   transform: translateY(-10px);
   transition: opacity 300ms, transform 300ms;
 }
+
+/* Twinkle animation */
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.animate-twinkle {
+  animation: twinkle 2s ease-in-out infinite;
+}
