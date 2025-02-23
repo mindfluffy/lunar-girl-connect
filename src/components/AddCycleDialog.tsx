@@ -8,10 +8,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/AuthContext";
 
 interface AddCycleDialogProps {
   isOpen: boolean;
@@ -21,10 +22,15 @@ interface AddCycleDialogProps {
 }
 
 const AddCycleDialog = ({ isOpen, onClose, selectedDate, onSuccess }: AddCycleDialogProps) => {
+  const { user } = useAuth();
+
   const handleSubmit = async () => {
+    if (!user) return;
+
     try {
       const { error } = await supabase.from("cycle_data").insert({
         start_date: format(selectedDate, "yyyy-MM-dd"),
+        user_id: user.id
       });
 
       if (error) throw error;

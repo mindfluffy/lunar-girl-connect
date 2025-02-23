@@ -8,13 +8,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/AuthContext";
 import AddCycleDialog from "@/components/AddCycleDialog";
 import { getMoonPhase, getMoonIcon } from "@/utils/moonPhases";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 interface CycleDate {
   start_date: string;
 }
 
-const Calendar = () => {
+const CalendarPage = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [cycleDates, setCycleDates] = useState<string[]>([]);
@@ -170,5 +171,11 @@ const Calendar = () => {
     </div>
   );
 };
+
+const Calendar = () => (
+  <ProtectedRoute>
+    <CalendarPage />
+  </ProtectedRoute>
+);
 
 export default Calendar;
