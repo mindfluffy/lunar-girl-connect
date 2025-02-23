@@ -1,21 +1,42 @@
 
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { useAuth } from "@/lib/AuthContext";
+import { Link } from "react-router-dom";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLogin, setIsLogin] = useState(true);
+  const { signInWithEmail, signInWithGoogle, signUp } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isLogin) {
+      await signInWithEmail(email, password);
+    } else {
+      await signUp(email, password);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 animate-fade-up">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-moonIndigo-50">Bienvenue</h2>
           <p className="mt-2 text-moonIndigo-200">
-            Connectez-vous pour commencer votre voyage lunaire
+            {isLogin
+              ? "Connectez-vous pour commencer votre voyage lunaire"
+              : "Créez un compte pour commencer votre voyage lunaire"}
           </p>
         </div>
-        
+
         <div className="mt-8 space-y-6 bg-moonIndigo-800/30 backdrop-blur-lg p-8 rounded-2xl border border-moonIndigo-700/50">
-          <form className="space-y-6" action="#" method="POST">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-moonIndigo-100">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-moonIndigo-100"
+              >
                 Adresse email
               </label>
               <div className="mt-1">
@@ -25,13 +46,18 @@ const Login = () => {
                   type="email"
                   autoComplete="email"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-moonIndigo-700 rounded-md shadow-sm bg-moonIndigo-900/50 text-moonIndigo-100 placeholder-moonIndigo-400 focus:outline-none focus:ring-2 focus:ring-moonIndigo-500 focus:border-transparent"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-moonIndigo-100">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-moonIndigo-100"
+              >
                 Mot de passe
               </label>
               <div className="mt-1">
@@ -41,6 +67,8 @@ const Login = () => {
                   type="password"
                   autoComplete="current-password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-moonIndigo-700 rounded-md shadow-sm bg-moonIndigo-900/50 text-moonIndigo-100 placeholder-moonIndigo-400 focus:outline-none focus:ring-2 focus:ring-moonIndigo-500 focus:border-transparent"
                 />
               </div>
@@ -51,7 +79,7 @@ const Login = () => {
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-moonIndigo-900 bg-moonIndigo-50 hover:bg-moonIndigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-moonIndigo-500 transition-colors"
               >
-                Se connecter
+                {isLogin ? "Se connecter" : "S'inscrire"}
               </button>
             </div>
           </form>
@@ -61,12 +89,15 @@ const Login = () => {
               <div className="w-full border-t border-moonIndigo-700"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-moonIndigo-900 text-moonIndigo-300">Ou continuer avec</span>
+              <span className="px-2 bg-moonIndigo-900 text-moonIndigo-300">
+                Ou continuer avec
+              </span>
             </div>
           </div>
 
           <div>
             <button
+              onClick={() => signInWithGoogle()}
               className="w-full flex justify-center items-center py-2 px-4 border border-moonIndigo-700 rounded-md shadow-sm text-sm font-medium text-moonIndigo-100 bg-moonIndigo-800/30 hover:bg-moonIndigo-800/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-moonIndigo-500 transition-colors"
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -88,6 +119,17 @@ const Login = () => {
                 />
               </svg>
               Google
+            </button>
+          </div>
+
+          <div className="text-center mt-4">
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-moonIndigo-300 hover:text-moonIndigo-100"
+            >
+              {isLogin
+                ? "Pas encore de compte ? S'inscrire"
+                : "Déjà un compte ? Se connecter"}
             </button>
           </div>
         </div>
