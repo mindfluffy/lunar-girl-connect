@@ -1,7 +1,16 @@
 
 import React from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 
 const StarryBackground = () => {
+  const shouldReduceMotion = useReducedMotion();
+  
+  // Configuration des variants pour les étoiles
+  const starVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: [0.2, 1, 0.2] },
+  };
+
   return (
     <div className="fixed inset-0 w-full h-full -z-10">
       {/* Fond de base */}
@@ -11,19 +20,27 @@ const StarryBackground = () => {
           {/* Génération des étoiles */}
           {[...Array(50)].map((_, i) => {
             const size = Math.random() * 2 + 1;
-            const animationDelay = Math.random() * 3;
+            const delay = Math.random() * 3;
             
             return (
-              <div
+              <motion.div
                 key={i}
-                className="absolute rounded-full bg-white animate-twinkle"
+                className="absolute rounded-full bg-white"
                 style={{
                   width: `${size}px`,
                   height: `${size}px`,
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
-                  animationDelay: `${animationDelay}s`,
-                  opacity: Math.random() * 0.5 + 0.5, // Opacité de base aléatoire
+                }}
+                variants={starVariants}
+                initial="initial"
+                animate="animate"
+                transition={{
+                  duration: shouldReduceMotion ? 0 : 4,
+                  delay: shouldReduceMotion ? 0 : delay,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut"
                 }}
               />
             );
@@ -31,8 +48,11 @@ const StarryBackground = () => {
         </div>
         
         {/* Gradient pour ajouter de la profondeur */}
-        <div 
+        <motion.div 
           className="absolute inset-0 bg-gradient-to-b from-transparent via-moonIndigo-900/50 to-moonIndigo-900"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.5 }}
           style={{ mixBlendMode: 'multiply' }}
         />
       </div>
