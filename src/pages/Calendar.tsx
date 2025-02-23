@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { ChevronLeft, ChevronRight, Moon } from "lucide-react";
@@ -10,6 +11,7 @@ import { getMoonPhase, getMoonIcon } from "@/utils/moonPhases";
 import { toast } from "@/hooks/use-toast";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import MoonLoader from "@/components/MoonLoader";
+import StarryBackground from "@/components/StarryBackground";
 
 interface CycleDate {
   start_date: string;
@@ -71,6 +73,7 @@ const CalendarPage = () => {
 
   return (
     <div className="min-h-screen pt-20 px-4">
+      <StarryBackground />
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12 animate-fade-up">
           <h1 className="text-3xl font-bold text-moonIndigo-50">
