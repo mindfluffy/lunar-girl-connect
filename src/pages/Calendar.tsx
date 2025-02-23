@@ -1,13 +1,50 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { ChevronLeft, ChevronRight, Moon } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/AuthContext";
+import AddCycleDialog from "@/components/AddCycleDialog";
+import { getMoonPhase, getMoonIcon } from "@/utils/moonPhases";
+import { toast } from "@/components/ui/use-toast";
+
+interface CycleDate {
+  start_date: string;
+}
 
 const Calendar = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [cycleDates, setCycleDates] = useState<string[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { user } = useAuth();
+
+  const fetchCycleDates = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("cycle_data")
+        .select("start_date")
+        .order("start_date", { ascending: false });
+
+      if (error) throw error;
+
+      setCycleDates((data as CycleDate[]).map((d) => d.start_date));
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Impossible de charger vos dates de cycle.",
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchCycleDates();
+  }, [user]);
 
   const previousMonth = () => {
     setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)));
@@ -15,6 +52,13 @@ const Calendar = () => {
 
   const nextMonth = () => {
     setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)));
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setDate(date);
+      setIsDialogOpen(true);
+    }
   };
 
   return (
@@ -52,7 +96,7 @@ const Calendar = () => {
             <CalendarComponent
               mode="single"
               selected={date}
-              onSelect={setDate}
+              onSelect={handleDateSelect}
               month={currentMonth}
               onMonthChange={setCurrentMonth}
               locale={fr}
@@ -71,7 +115,7 @@ const Calendar = () => {
                 head_cell: "text-moonIndigo-400 rounded-md w-9 font-normal text-[0.8rem] uppercase",
                 row: "flex w-full mt-2",
                 cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-moonIndigo-700/30",
-                day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-moonIndigo-700/50 rounded-full transition-colors",
+                day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-moonIndigo-700/50 rounded-full transition-colors cursor-pointer",
                 day_today: "bg-moonIndigo-600/50 text-moonIndigo-50",
                 day_outside: "text-moonIndigo-500 opacity-50",
                 day_disabled: "text-moonIndigo-500",
@@ -79,12 +123,25 @@ const Calendar = () => {
                 day_selected: "bg-moonIndigo-500 text-moonIndigo-50 hover:bg-moonIndigo-600 hover:text-moonIndigo-50 focus:bg-moonIndigo-500 focus:text-moonIndigo-50",
               }}
               components={{
-                DayContent: (props) => (
-                  <div className="relative w-full h-full flex flex-col items-center justify-center">
-                    <span>{props.date.getDate()}</span>
-                    <Moon className="h-3 w-3 text-moonIndigo-300 absolute bottom-0" />
-                  </div>
-                ),
+                DayContent: (props) => {
+                  const date = props.date;
+                  const formattedDate = format(date, "yyyy-MM-dd");
+                  const isCycleStart = cycleDates.includes(formattedDate);
+                  const moonPhase = getMoonPhase(date);
+                  const moonSize = isCycleStart ? "w-4 h-4" : "w-3 h-3";
+                  
+                  return (
+                    <div className="relative w-full h-full flex flex-col items-center justify-center">
+                      <span>{props.date.getDate()}</span>
+                      <Moon 
+                        className={`${moonSize} ${isCycleStart ? "text-moonIndigo-400" : "text-moonIndigo-300"} absolute bottom-0`} 
+                      />
+                      {isCycleStart && (
+                        <div className="absolute top-0 right-0 w-2 h-2 bg-moonIndigo-400 rounded-full" />
+                      )}
+                    </div>
+                  );
+                },
               }}
             />
           </div>
@@ -95,12 +152,21 @@ const Calendar = () => {
               <span>Phase lunaire</span>
             </div>
             <div className="flex items-center space-x-2 text-moonIndigo-300">
-              <div className="h-3 w-3 rounded-full bg-moonIndigo-700" />
-              <span>Cycle personnel</span>
+              <div className="h-3 w-3 rounded-full bg-moonIndigo-400" />
+              <span>Début de cycle</span>
             </div>
           </div>
         </div>
       </div>
+
+      {date && (
+        <AddCycleDialog
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+          selectedDate={date}
+          onSuccess={fetchCycleDates}
+        />
+      )}
     </div>
   );
 };
