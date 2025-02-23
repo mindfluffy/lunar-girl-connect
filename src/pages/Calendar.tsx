@@ -55,13 +55,14 @@ const Calendar = () => {
               onSelect={setDate}
               month={currentMonth}
               onMonthChange={setCurrentMonth}
+              locale={fr}
               className="rounded-lg border-moonIndigo-700/50"
               classNames={{
                 months: "space-y-4",
                 month: "space-y-4",
                 caption: "flex justify-center pt-1 relative items-center",
-                caption_label: "text-sm font-medium",
-                nav: "space-x-1 flex items-center",
+                caption_label: "text-sm font-medium hidden",
+                nav: "space-x-1 flex items-center hidden",
                 nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
                 nav_button_previous: "absolute left-1",
                 nav_button_next: "absolute right-1",
