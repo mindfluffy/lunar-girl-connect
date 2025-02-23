@@ -5,9 +5,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/lib/AuthContext";
+import { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Navigation from "./components/Navigation";
 import StarryBackground from "./components/StarryBackground";
+import MoonLoader from "./components/MoonLoader";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Calendar from "./pages/Calendar";
@@ -19,10 +22,24 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simuler un temps de chargement minimal pour voir l'animation
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
+          <AnimatePresence>
+            {isLoading && <MoonLoader />}
+          </AnimatePresence>
           <Toaster />
           <Sonner />
           <div className="min-h-screen bg-moonIndigo-900 text-moonIndigo-50 font-sans">
