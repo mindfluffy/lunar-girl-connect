@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/lib/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Navigation from "./components/Navigation";
+import StarryBackground from "./components/StarryBackground";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Calendar from "./pages/Calendar";
@@ -25,6 +26,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <div className="min-h-screen bg-moonIndigo-900 text-moonIndigo-50 font-sans">
+            <StarryBackground />
             <Navigation />
             <Routes>
               <Route path="/" element={<Index />} />
@@ -71,4 +73,3 @@ const App = () => {
 };
 
 export default App;
-
