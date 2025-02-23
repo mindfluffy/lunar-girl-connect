@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { ChevronLeft, ChevronRight, Moon } from "lucide-react";
@@ -10,6 +9,7 @@ import AddCycleDialog from "@/components/AddCycleDialog";
 import { getMoonPhase, getMoonIcon } from "@/utils/moonPhases";
 import { toast } from "@/hooks/use-toast";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import MoonLoader from "@/components/MoonLoader";
 
 interface CycleDate {
   start_date: string;
@@ -20,6 +20,7 @@ const CalendarPage = () => {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [cycleDates, setCycleDates] = useState<string[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
 
   const fetchCycleDates = async () => {
@@ -40,6 +41,8 @@ const CalendarPage = () => {
         title: "Erreur",
         description: "Impossible de charger vos dates de cycle.",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -61,6 +64,10 @@ const CalendarPage = () => {
       setIsDialogOpen(true);
     }
   };
+
+  if (isLoading) {
+    return <MoonLoader />;
+  }
 
   return (
     <div className="min-h-screen pt-20 px-4">
