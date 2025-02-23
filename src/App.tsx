@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/lib/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Navigation from "./components/Navigation";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -28,10 +29,38 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/journal" element={<Journal />} />
-              <Route path="/insights" element={<Insights />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route
+                path="/calendar"
+                element={
+                  <ProtectedRoute>
+                    <Calendar />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/journal"
+                element={
+                  <ProtectedRoute>
+                    <Journal />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/insights"
+                element={
+                  <ProtectedRoute>
+                    <Insights />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
